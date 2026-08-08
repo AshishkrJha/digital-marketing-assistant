@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard – ConversationAI{% endblock %}
+{% block page_title %}Admin Dashboard{% endblock %}
+{% block nav_admin_dash %}active{% endblock %}
+
+{% block content %}
+<div class="row g-4 mb-4">
+  <div class="col-md-6 col-lg-3">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <h6 class="card-title text-muted mb-2">Total Users</h6>
+            <h2 class="mb-0">{{ total_users }}</h2>
+          </div>
+          <div style="font-size: 2rem;">👥</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 col-lg-3">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <h6 class="card-title text-muted mb-2">Projects</h6>
+            <h2 class="mb-0">{{ total_projects }}</h2>
+          </div>
+          <div style="font-size: 2rem;">📁</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 col-lg-3">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <h6 class="card-title text-muted mb-2">Conversations</h6>
+            <h2 class="mb-0">{{ total_conversations }}</h2>
+          </div>
+          <div style="font-size: 2rem;">💬</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 col-lg-3">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <h6 class="card-title text-muted mb-2">Pending Approvals</h6>
+            <h2 class="mb-0">{{ pending_approvals }}</h2>
+          </div>
+          <div style="font-size: 2rem;">⏳</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Quick Actions</h5>
+      </div>
+      <div class="card-body d-flex gap-2">
+        <a href="{% url 'frontend:admin_users' %}" class="btn btn-primary">
+          <i class="bi bi-people me-1"></i>Manage Users
+        </a>
+        <a href="{% url 'frontend:admin_projects' %}" class="btn btn-outline-primary">
+          <i class="bi bi-folder2 me-1"></i>Manage Projects
+        </a>
+        <a href="{% url 'frontend:moderator_queue' %}" class="btn btn-outline-warning">
+          <i class="bi bi-list-check me-1"></i>Pending Reviews
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

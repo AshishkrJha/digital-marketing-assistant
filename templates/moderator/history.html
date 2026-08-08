@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Moderation History – ConversationAI{% endblock %}
+{% block page_title %}Moderation History{% endblock %}
+{% block nav_history %}active{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h5 class="mb-0">All Moderation Actions</h5>
+  </div>
+  <div class="table-responsive">
+    <table class="table mb-0">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Action</th>
+          <th>Decision</th>
+          <th>Moderator</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in logs %}
+        <tr>
+          <td>{{ log.response.submitted_by.email }}</td>
+          <td><small class="text-muted">{{ log.get_action_display }}</small></td>
+          <td>
+            {% if log.action == 'approved' %}
+            <span class="badge bg-success">Approved</span>
+            {% elif log.action == 'rejected' %}
+            <span class="badge bg-danger">Rejected</span>
+            {% endif %}
+          </td>
+          <td>{{ log.moderator.email }}</td>
+          <td><small class="text-muted">{{ log.timestamp|date:"M d, h:i A" }}</small></td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" class="text-center text-muted py-4">No history yet</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

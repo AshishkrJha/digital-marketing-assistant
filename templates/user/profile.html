@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Profile – ConversationAI{% endblock %}
+{% block page_title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Profile Information</h5>
+      </div>
+      <div class="card-body">
+        {% if message %}
+        <div class="alert alert-success">{{ message }}</div>
+        {% endif %}
+        
+        <form method="post">
+          {% csrf_token %}
+          
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">First Name</label>
+              <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Last Name</label>
+              <input type="text" name="last_name" class="form-control" value="{{ user.last_name }}" />
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Email</label>
+            <input type="email" class="form-control" value="{{ user.email }}" disabled />
+            <small class="text-muted">Email cannot be changed</small>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Phone</label>
+            <input type="tel" name="phone" class="form-control" value="{{ profile.phone }}" placeholder="+1 (555) 000-0000" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Department</label>
+            <input type="text" name="department" class="form-control" value="{{ profile.department }}" placeholder="e.g., Sales, Support" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Bio</label>
+            <textarea name="bio" class="form-control" rows="4" placeholder="Tell us about yourself...">{{ profile.bio }}</textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check me-1"></i>Save Changes
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-body">
+        <h6 class="card-title mb-3">Account Information</h6>
+        <div class="mb-3">
+          <small class="text-muted d-block">Role</small>
+          <strong class="text-capitalize">{{ user.get_role_display }}</strong>
+        </div>
+        <div class="mb-3">
+          <small class="text-muted d-block">Status</small>
+          <strong>{% if user.is_active %}Active{% else %}Inactive{% endif %}</strong>
+        </div>
+        <div class="mb-3">
+          <small class="text-muted d-block">Member Since</small>
+          <strong>{{ user.created_at|date:"M d, Y" }}</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

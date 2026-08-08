@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}My Responses – ConversationAI{% endblock %}
+{% block page_title %}My Responses{% endblock %}
+{% block nav_responses %}active{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="table-responsive">
+    <table class="table mb-0">
+      <thead>
+        <tr>
+          <th>Response Content</th>
+          <th>Status</th>
+          <th>Created</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for response in responses %}
+        <tr>
+          <td>
+            <small>{{ response.message.content|truncatewords:10 }}</small>
+          </td>
+          <td>
+            {% if response.status == 'approved' %}
+            <span class="badge bg-success">Approved</span>
+            {% elif response.status == 'rejected' %}
+            <span class="badge bg-danger">Rejected</span>
+            {% elif response.status == 'submitted' %}
+            <span class="badge bg-warning">Pending Review</span>
+            {% else %}
+            <span class="badge bg-secondary">{{ response.get_status_display }}</span>
+            {% endif %}
+          </td>
+          <td><small class="text-muted">{{ response.created_at|date:"M d, Y" }}</small></td>
+          <td>
+            <a href="#" class="btn btn-sm btn-outline-primary">View</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" class="text-center text-muted py-4">
+            No responses yet. <a href="{% url 'frontend:user_chat' %}">Start a conversation</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

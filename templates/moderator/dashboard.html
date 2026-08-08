@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Moderator Dashboard – ConversationAI{% endblock %}
+{% block page_title %}Moderator Dashboard{% endblock %}
+{% block nav_mod_dash %}active{% endblock %}
+
+{% block content %}
+<div class="row g-4 mb-4">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <h6 class="card-title text-muted mb-2">Pending Reviews</h6>
+            <h2 class="mb-0">{{ pending_count }}</h2>
+          </div>
+          <div style="font-size: 2.5rem;">⏳</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <h6 class="card-title text-muted mb-2">Processed</h6>
+            <h2 class="mb-0">{{ processed_count }}</h2>
+          </div>
+          <div style="font-size: 2.5rem;">✅</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">Recent Actions</h5>
+    <a href="{% url 'frontend:moderator_queue' %}" class="btn btn-sm btn-primary">View Queue</a>
+  </div>
+  <div class="table-responsive">
+    <table class="table mb-0">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Action</th>
+          <th>Decision</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in recent_actions %}
+        <tr>
+          <td>{{ log.response.submitted_by.email }}</td>
+          <td><small>{{ log.get_action_display }}</small></td>
+          <td>
+            {% if log.action == 'approved' %}
+            <span class="badge bg-success">Approved</span>
+            {% elif log.action == 'rejected' %}
+            <span class="badge bg-danger">Rejected</span>
+            {% endif %}
+          </td>
+          <td><small class="text-muted">{{ log.timestamp|date:"M d, h:i A" }}</small></td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" class="text-center text-muted py-4">No actions yet</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

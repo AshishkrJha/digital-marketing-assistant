@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Manage Users – ConversationAI{% endblock %}
+{% block page_title %}Manage Users{% endblock %}
+{% block nav_admin_users %}active{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h5 class="mb-0">All Users</h5>
+  </div>
+  <div class="table-responsive">
+    <table class="table mb-0">
+      <thead>
+        <tr>
+          <th>Email</th>
+          <th>Name</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr>
+          <td><strong>{{ user.email }}</strong></td>
+          <td>{{ user.first_name }} {{ user.last_name }}</td>
+          <td>
+            <form method="post" style="display: inline;">
+              {% csrf_token %}
+              <input type="hidden" name="user_id" value="{{ user.id }}" />
+              <input type="hidden" name="action" value="change_role" />
+              <select name="new_role" class="form-select form-select-sm" onchange="this.form.submit()" style="width: auto;">
+                <option value="user" {% if user.role == 'user' %}selected{% endif %}>User</option>
+                <option value="moderator" {% if user.role == 'moderator' %}selected{% endif %}>Moderator</option>
+                <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
+              </select>
+            </form>
+          </td>
+          <td>
+            {% if user.is_active %}
+            <span class="badge bg-success">Active</span>
+            {% else %}
+            <span class="badge bg-danger">Inactive</span>
+            {% endif %}
+          </td>
+          <td>
+            <form method="post" style="display: inline;">
+              {% csrf_token %}
+              <input type="hidden" name="user_id" value="{{ user.id }}" />
+              {% if user.is_active %}
+              <button type="submit" name="action" value="deactivate" class="btn btn-sm btn-danger">Deactivate</button>
+              {% else %}
+              <button type="submit" name="action" value="activate" class="btn btn-sm btn-success">Activate</button>
+              {% endif %}
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" class="text-center text-muted py-4">No users yet</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

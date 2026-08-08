@@ -1,0 +1,15 @@
+asgiref
+Django
+psycopg2-binary
+sqlparse
+tzdata
+waitress
+djangorestframework
+djangorestframework-simplejwt
+django-cors-headers
+whitenoise
+python-decouple
+google-generativeai
+langchain
+pydantic
+requests

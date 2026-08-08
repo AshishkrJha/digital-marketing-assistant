@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Moderation Queue – ConversationAI{% endblock %}
+{% block page_title %}Moderation Queue{% endblock %}
+{% block nav_queue %}active{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h5 class="mb-0">Pending Reviews</h5>
+  </div>
+  <div class="table-responsive">
+    <table class="table mb-0">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Response Content</th>
+          <th>Submitted</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in queue_items %}
+        <tr>
+          <td>
+            <strong>{{ item.response.submitted_by.email }}</strong>
+            <br>
+            <small class="text-muted">{{ item.response.submitted_by.first_name }} {{ item.response.submitted_by.last_name }}</small>
+          </td>
+          <td>
+            <small>{{ item.response.message.content|truncatewords:15 }}</small>
+          </td>
+          <td>
+            <small class="text-muted">{{ item.created_at|date:"M d, h:i A" }}</small>
+          </td>
+          <td>
+            <a href="{% url 'frontend:moderator_review' item.id %}" class="btn btn-sm btn-primary">
+              <i class="bi bi-eye me-1"></i>Review
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" class="text-center text-muted py-5">
+            <div style="font-size: 2rem; margin-bottom: 1rem;">✅</div>
+            <p>No pending reviews! Great work.</p>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

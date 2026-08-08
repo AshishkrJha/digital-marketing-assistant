@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Register – ConversationAI{% endblock %}
+
+{% block auth_content %}
+<div style="text-align: center; margin-bottom: 2rem;">
+  <div style="font-size: 3rem; margin-bottom: 1rem;">✨</div>
+  <h2 style="margin: 0; color: #333;">Create account</h2>
+  <p style="color: #666; margin: 0.5rem 0;">Join ConversationAI today</p>
+</div>
+
+{% if error %}
+<div class="alert alert-danger" role="alert">
+  <i class="bi bi-exclamation-circle me-2"></i>{{ error }}
+</div>
+{% endif %}
+
+<form method="post">
+  {% csrf_token %}
+
+  <div class="row g-3 mb-3">
+    <div class="col-6">
+      <label class="form-label fw-semibold">First Name</label>
+      <input type="text" name="first_name" class="form-control" placeholder="John" required />
+    </div>
+    <div class="col-6">
+      <label class="form-label fw-semibold">Last Name</label>
+      <input type="text" name="last_name" class="form-control" placeholder="Doe" required />
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label fw-semibold">Email address</label>
+    <div class="input-group">
+      <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+      <input type="email" name="email" class="form-control" placeholder="john@example.com" required />
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label fw-semibold">Password</label>
+    <div class="input-group">
+      <span class="input-group-text"><i class="bi bi-lock"></i></span>
+      <input type="password" name="password" class="form-control" id="password" placeholder="••••••••" required minlength="8" />
+    </div>
+    <div class="form-text">Minimum 8 characters</div>
+  </div>
+
+  <div class="mb-4">
+    <label class="form-label fw-semibold">Confirm Password</label>
+    <div class="input-group">
+      <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+      <input type="password" name="password_confirm" class="form-control" id="password_confirm" placeholder="••••••••" required />
+    </div>
+  </div>
+
+  <!-- Password strength indicator -->
+  <div class="mb-3">
+    <div class="d-flex gap-1" id="strength-bars">
+      <div class="flex-fill rounded" style="height:4px;background:#e5e7eb" id="s1"></div>
+      <div class="flex-fill rounded" style="height:4px;background:#e5e7eb" id="s2"></div>
+      <div class="flex-fill rounded" style="height:4px;background:#e5e7eb" id="s3"></div>
+      <div class="flex-fill rounded" style="height:4px;background:#e5e7eb" id="s4"></div>
+    </div>
+    <div class="form-text" id="strength-label"></div>
+  </div>
+
+  <button type="submit" class="btn btn-primary w-100 py-2">
+    <i class="bi bi-person-plus me-2"></i>Create Account
+  </button>
+</form>
+
+<hr class="my-3" />
+<p class="text-center text-muted mb-0" style="font-size:.9rem">
+  Already have an account?
+  <a href="{% url 'frontend:login' %}" class="text-decoration-none fw-semibold" style="color:#4f46e5">Sign in</a>
+</p>
+
+<script>
+document.getElementById('password').addEventListener('input', function () {
+    const pw = this.value;
+    const strength = [
+        pw.length >= 8,
+        /[A-Z]/.test(pw),
+        /[0-9]/.test(pw),
+        /[^a-zA-Z0-9]/.test(pw),
+    ];
+    const score = strength.filter(Boolean).length;
+    const colors = ['#ef4444','#f59e0b','#10b981','#10b981'];
+    const labels = ['','Weak','Fair','Good','Strong'];
+    for (let i=1;i<=4;i++) {
+        document.getElementById('s'+i).style.background = i<=score ? colors[score-1] : '#e5e7eb';
+    }
+    document.getElementById('strength-label').textContent = pw.length > 0 ? labels[score] : '';
+});
+</script>
+{% endblock auth_content %}
