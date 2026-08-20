@@ -1,12 +1,18 @@
+import os
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
+from django.http import HttpResponse
 from django.db.models import Q
 from apps.users.models import User, UserProfile
-from apps.projects.models import Project, UserProject
+from apps.projects.models import Project, UserProject, ProjectArtifact
 from apps.conversations.models import Conversation, Message, Response, ResponseApproval
 from apps.moderation.models import ModerationQueue, ModerationLog
+
+ARTIFACT_TEXT_EXTENSIONS = {'.txt', '.md', '.csv', '.json', '.log'}
+ARTIFACT_IMAGE_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.gif', '.webp', '.bmp'}
+ARTIFACT_MAX_SIZE = 5 * 1024 * 1024  # 5MB
 
 
 def login_required_decorator(view_func):
@@ -324,3 +330,67 @@ def admin_projects(request):
         'projects': projects,
     }
     return render(request, 'admin_panel/projects.html', context)
+
+
+@admin_required
+def admin_project_artifacts(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+    error = None
+
+    if request.method == 'POST':
+        uploaded_file = request.FILES.get('artifact_file')
+
+        if not uploaded_file:
+            error = 'Please choose a file to upload.'
+        else:
+            ext = os.path.splitext(uploaded_file.name)[1].lower()
+            if ext in ARTIFACT_IMAGE_EXTENSIONS:
+                artifact_type = 'image'
+            elif ext in ARTIFACT_TEXT_EXTENSIONS:
+                artifact_type = 'text'
+            else:
+                error = (
+                    f'Unsupported file type "{ext}". Allowed text: '
+                    f'{", ".join(sorted(ARTIFACT_TEXT_EXTENSIONS))} — '
+                    f'allowed image: {", ".join(sorted(ARTIFACT_IMAGE_EXTENSIONS))}.'
+                )
+
+            if not error and uploaded_file.size > ARTIFACT_MAX_SIZE:
+                error = 'File exceeds the 5MB size limit.'
+
+            if not error:
+                ProjectArtifact.objects.create(
+                    project=project,
+                    uploaded_by=request.user,
+                    artifact_type=artifact_type,
+                    file_name=uploaded_file.name,
+                    content_type=uploaded_file.content_type or 'application/octet-stream',
+                    size=uploaded_file.size,
+                    content=uploaded_file.read(),
+                )
+                return redirect('frontend:admin_project_artifacts', project_id=project.id)
+
+    artifacts = project.artifacts.select_related('uploaded_by').order_by('-created_at')
+
+    context = {
+        'project': project,
+        'artifacts': artifacts,
+        'error': error,
+    }
+    return render(request, 'admin_panel/project_artifacts.html', context)
+
+
+@admin_required
+def admin_project_artifact_view(request, project_id, artifact_id):
+    artifact = get_object_or_404(ProjectArtifact, id=artifact_id, project_id=project_id)
+    response = HttpResponse(bytes(artifact.content), content_type=artifact.content_type)
+    response['Content-Disposition'] = f'inline; filename="{artifact.file_name}"'
+    return response
+
+
+@admin_required
+@require_http_methods(['POST'])
+def admin_project_artifact_delete(request, project_id, artifact_id):
+    artifact = get_object_or_404(ProjectArtifact, id=artifact_id, project_id=project_id)
+    artifact.delete()
+    return redirect('frontend:admin_project_artifacts', project_id=project_id)

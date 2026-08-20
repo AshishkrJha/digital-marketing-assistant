@@ -20,7 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    # Django Admin
+    # My Admin
     path('admin/', admin.site.urls),
 
     # REST API

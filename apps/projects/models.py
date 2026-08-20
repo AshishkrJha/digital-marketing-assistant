@@ -44,3 +44,29 @@ class UserProject(models.Model):
 
     def is_admin(self):
         return self.role == 'admin'
+
+
+class ProjectArtifact(models.Model):
+    """Project-related artifact (text file or image) stored directly in the database."""
+    ARTIFACT_TYPES = (
+        ('text', 'Text File'),
+        ('image', 'Image'),
+    )
+
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='artifacts')
+    uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='uploaded_artifacts')
+    artifact_type = models.CharField(max_length=10, choices=ARTIFACT_TYPES)
+    file_name = models.CharField(max_length=255)
+    content_type = models.CharField(max_length=100)
+    size = models.PositiveIntegerField()
+    content = models.BinaryField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'project_artifact'
+        verbose_name = 'Project Artifact'
+        verbose_name_plural = 'Project Artifacts'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.file_name} ({self.project.name})"

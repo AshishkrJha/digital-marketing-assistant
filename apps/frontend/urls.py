@@ -30,4 +30,7 @@ urlpatterns = [
     path('admin-panel/', views.admin_dashboard, name='admin_dashboard'),
     path('admin-panel/users/', views.admin_users, name='admin_users'),
     path('admin-panel/projects/', views.admin_projects, name='admin_projects'),
+    path('admin-panel/projects/<int:project_id>/artifacts/', views.admin_project_artifacts, name='admin_project_artifacts'),
+    path('admin-panel/projects/<int:project_id>/artifacts/<int:artifact_id>/view/', views.admin_project_artifact_view, name='admin_project_artifact_view'),
+    path('admin-panel/projects/<int:project_id>/artifacts/<int:artifact_id>/delete/', views.admin_project_artifact_delete, name='admin_project_artifact_delete'),
 ]

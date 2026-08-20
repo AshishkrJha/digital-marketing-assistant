@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Artifacts – {{ project.name }} – ConversationAI{% endblock %}
+{% block page_title %}Project Artifacts{% endblock %}
+{% block nav_admin_projects %}active{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h5 class="mb-0">{{ project.name }}</h5>
+    <small class="text-muted">Text files and images stored for this project</small>
+  </div>
+  <a href="{% url 'frontend:admin_projects' %}" class="btn btn-sm btn-outline-secondary">
+    <i class="bi bi-arrow-left"></i> Back to Projects
+  </a>
+</div>
+
+<div class="card mb-3">
+  <div class="card-header">
+    <h6 class="mb-0">Upload Artifact</h6>
+  </div>
+  <div class="card-body">
+    {% if error %}
+    <div class="alert alert-danger py-2 mb-3">{{ error }}</div>
+    {% endif %}
+    <form method="post" enctype="multipart/form-data" class="d-flex gap-2 align-items-center flex-wrap">
+      {% csrf_token %}
+      <input type="file" name="artifact_file" class="form-control" style="max-width: 360px;" required />
+      <button type="submit" class="btn btn-primary">
+        <i class="bi bi-upload me-1"></i>Upload
+      </button>
+      <small class="text-muted">
+        Text: .txt, .md, .csv, .json, .log &nbsp;·&nbsp; Images: .png, .jpg, .jpeg, .gif, .webp, .bmp &nbsp;·&nbsp; Max 5MB
+      </small>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h6 class="mb-0">All Artifacts ({{ artifacts|length }})</h6>
+  </div>
+  <div class="table-responsive">
+    <table class="table mb-0 align-middle">
+      <thead>
+        <tr>
+          <th>Preview</th>
+          <th>File Name</th>
+          <th>Type</th>
+          <th>Size</th>
+          <th>Uploaded By</th>
+          <th>Uploaded At</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for artifact in artifacts %}
+        <tr>
+          <td>
+            {% if artifact.artifact_type == 'image' %}
+            <img src="{% url 'frontend:admin_project_artifact_view' project.id artifact.id %}"
+                 alt="{{ artifact.file_name }}" style="width: 42px; height: 42px; object-fit: cover; border-radius: 6px;" />
+            {% else %}
+            <span style="font-size: 1.5rem;"><i class="bi bi-file-text"></i></span>
+            {% endif %}
+          </td>
+          <td><strong>{{ artifact.file_name }}</strong></td>
+          <td>
+            {% if artifact.artifact_type == 'image' %}
+            <span class="badge bg-info-subtle text-info-emphasis">Image</span>
+            {% else %}
+            <span class="badge bg-secondary-subtle text-secondary-emphasis">Text</span>
+            {% endif %}
+          </td>
+          <td><small>{{ artifact.size|filesizeformat }}</small></td>
+          <td><small>{{ artifact.uploaded_by.email }}</small></td>
+          <td><small>{{ artifact.created_at|date:"M d, Y h:i A" }}</small></td>
+          <td>
+            <a href="{% url 'frontend:admin_project_artifact_view' project.id artifact.id %}"
+               target="_blank" class="btn btn-sm btn-outline-primary">
+              <i class="bi bi-eye"></i> View
+            </a>
+            <form method="post" action="{% url 'frontend:admin_project_artifact_delete' project.id artifact.id %}"
+                  style="display: inline;" onsubmit="return confirm('Delete this artifact?');">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-outline-danger">
+                <i class="bi bi-trash"></i>
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" class="text-center text-muted py-4">No artifacts uploaded yet</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

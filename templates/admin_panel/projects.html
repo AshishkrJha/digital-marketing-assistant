@@ -26,6 +26,9 @@
           <td><small>{{ project.description|truncatewords:10 }}</small></td>
           <td>
             <a href="{% url 'frontend:user_project_detail' project.id %}" class="btn btn-sm btn-outline-primary">View</a>
+            <a href="{% url 'frontend:admin_project_artifacts' project.id %}" class="btn btn-sm btn-outline-secondary">
+              <i class="bi bi-paperclip"></i> Artifacts
+            </a>
           </td>
         </tr>
         {% empty %}
