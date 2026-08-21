@@ -66,7 +66,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'emailPrepAI.urls'
+ROOT_URLCONF = 'DMAgent.urls'
 
 TEMPLATES = [
     {
@@ -83,7 +83,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'emailPrepAI.wsgi.application'
+WSGI_APPLICATION = 'DMAgent.wsgi.application'
 
 
 # Database
